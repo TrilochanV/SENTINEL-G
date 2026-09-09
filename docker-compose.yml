@@ -1,0 +1,10 @@
+services:
+  sentinel-backend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+    ports:
+      - "5000:5000"
+    environment:
+      SENTINEL_ENV: development
+    restart: unless-stopped
