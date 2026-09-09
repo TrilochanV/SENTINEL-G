@@ -3,12 +3,18 @@ SENTINEL-G — Real-Time AML & Cyber-Forensic Intelligence Platform
 Flask application entry point.
 """
 from flask import Flask, send_from_directory
-from flask_cors import CORS
+from security.cors import configure_cors
+from security.headers import apply_security_headers
+from security.request_guard import install_request_guard
+from security.rate_limit import install_rate_limiter
 from routes.api import api
 import os
 
 app = Flask(__name__, static_folder="static", static_url_path="/static")
-CORS(app)
+configure_cors(app)
+apply_security_headers(app)
+install_request_guard(app)
+install_rate_limiter(app)
 
 # Register API blueprint
 app.register_blueprint(api)
@@ -39,4 +45,4 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", "5000"))
     print(f"  Sentinel-G API: http://localhost:{port}")
     print("=" * 60)
-    app.run(debug=True, host="0.0.0.0", port=port)
+    app.run(debug=os.environ.get("SENTINEL_DEBUG", "false").lower() == "true", host="0.0.0.0", port=port)
